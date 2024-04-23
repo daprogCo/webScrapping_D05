@@ -8,11 +8,6 @@ from datetime import datetime
 import sqlite3
 import math
 
-### Create a SSL context for bypassing SSL certificate verification
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
-
 ### Constants
 DATABASE = 'SAQ.db'
 URL_WINES = "wine_url_list.txt"
@@ -20,6 +15,12 @@ TABLE_LISTING = 'list_SAQ'
 TABLE_WINES = 'wine_SAQ'
 URL_LISTING = "https://www.saq.com/fr/produits/vin"
 ITEMS_PER_PAGE = 24
+
+# SSL context function
+def create_ssl_context():
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
 
 # Helpers sqlite3 functions
 def copy_to_sqlite(url, response, table):
@@ -111,16 +112,14 @@ def get_wine_infos(html):
                 appelation(html), designation(html), cepage(html), alcool(html), sucre(html), frmt(html), producteur(html),particularite(html),code(html))
 
 # Listing wine function
-def list_all_wines_urls(start=1):
-    count = count_table_rows(TABLE_LISTING)
+def list_all_wines_urls(start=1, count=count_table_rows(TABLE_LISTING)):
     for i in range(start, count + 1):
         response = fetch_from_sqlite("response", TABLE_LISTING, i)
         soup = BeautifulSoup(response, "html.parser")
         urls = get_urls_product(soup)
         save_to_file(URL_WINES, urls)
 
-def list_all_wines(start=1):
-    count = count_table_rows(TABLE_WINES)
+def list_all_wines(start=1,count=count_table_rows(TABLE_WINES)):
     for i in range(start, count + 1):
         response = fetch_from_sqlite("response", TABLE_WINES, i)
         soup = BeautifulSoup(response, "html.parser")
@@ -132,20 +131,19 @@ def list_all_wines(start=1):
         copy_to_mongodb(wine)
 
 # Webcrawler functions
-def webcrawler_listing(start=1):
-    num_pages = get_number_of_pages()
+def webcrawler_listing(start=1, num_pages=get_number_of_pages()):
     for i in range(start, num_pages + 1):
         url = f"{URL_LISTING}?p={i}"
         print(f"Fetching {url}...")
         response = requests.get(url).content
         print(f"Copying to sqlite...")
-        copy_to_sqlite(url, response, TABLE_LISTING)
+        #copy_to_sqlite(url, response, TABLE_LISTING)
         print(50 * "=")
-        time.sleep(randint(1, 3))
+        #time.sleep(randint(1, 3))
 
-def webcrawler_wines(start=0):
+def webcrawler_wines(start=0, end=len(all_wines_urls())):
     urls = all_wines_urls()
-    for i in range(start, len(urls)):
+    for i in range(start, end):
         print(f"Fetching #{i}: {urls[i]}...")
         response = requests.get(urls[i]).content
         print(f"Copying to sqlite...")
@@ -155,11 +153,11 @@ def webcrawler_wines(start=0):
 
 # Main function to perform all the tasks
 def main():
+    create_ssl_context()
     webcrawler_listing()
     list_all_wines_urls()
     webcrawler_wines()
     list_all_wines()
 
 if __name__ == "__main__":
-    list_all_wines(8500)
-
+    main()
