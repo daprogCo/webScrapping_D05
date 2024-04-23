@@ -137,9 +137,9 @@ def webcrawler_listing(start=1, num_pages=get_number_of_pages()):
         print(f"Fetching {url}...")
         response = requests.get(url).content
         print(f"Copying to sqlite...")
-        #copy_to_sqlite(url, response, TABLE_LISTING)
+        copy_to_sqlite(url, response, TABLE_LISTING)
         print(50 * "=")
-        #time.sleep(randint(1, 3))
+        time.sleep(randint(1, 3))
 
 def webcrawler_wines(start=0, end=len(all_wines_urls())):
     urls = all_wines_urls()
