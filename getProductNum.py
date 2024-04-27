@@ -164,7 +164,10 @@ def webcrawler_wines(start=0, end=len(all_wines_urls())):
 
 # Main function to perform all the tasks
 def main():
-    create_ssl_context()
+    try: 
+        create_ssl_context()
+    except:
+        return
     webcrawler_listing()
     list_all_wines_urls()
     webcrawler_wines()
