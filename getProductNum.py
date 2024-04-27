@@ -16,6 +16,16 @@ TABLE_WINES = 'wine_SAQ'
 URL_LISTING = "https://www.saq.com/fr/produits/vin"
 ITEMS_PER_PAGE = 24
 
+### Catch errors wrapper function
+def catch_errors(func: callable):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Error from <{func.__name__}> function: {e}")
+            return None
+    return wrapper
+
 # SSL context function
 def create_ssl_context():
     ctx = ssl.create_default_context()
@@ -119,6 +129,7 @@ def list_all_wines_urls(start=1, count=count_table_rows(TABLE_LISTING)):
         urls = get_urls_product(soup)
         save_to_file(URL_WINES, urls)
 
+@catch_errors
 def list_all_wines(start=1,count=count_table_rows(TABLE_WINES)):
     for i in range(start, count + 1):
         response = fetch_from_sqlite("response", TABLE_WINES, i)
@@ -160,4 +171,5 @@ def main():
     list_all_wines()
 
 if __name__ == "__main__":
-    main()
+    ## main()
+    list_all_wines(-4,10)
