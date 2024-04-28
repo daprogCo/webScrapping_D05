@@ -9,7 +9,6 @@ import sqlite3
 import math
 import certifi
 from pymongo import MongoClient
-from pymongo.server_api import ServerApi
 
 ### Constants
 DATABASE = 'SAQ.db'
