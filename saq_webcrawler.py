@@ -14,7 +14,7 @@ from pymongo.server_api import ServerApi
 ### Constants
 DATABASE = 'SAQ.db'
 URL_WINES = "wine_url_list.txt"
-URI_ATLAS_MONGODB = "mongodb+srv://daprogco:h24HszlhzKqzI6PM@saq.xrq1hyr.mongodb.net/?retryWrites=true&w=majority&appName=SAQ"
+URI_ATLAS_MONGODB = "mongodb+srv://<username>:<password>.<server_name>.mongodb.net/"
 TABLE_LISTING = 'list_SAQ'
 TABLE_WINES = 'wine_SAQ'
 URL_LISTING = "https://www.saq.com/fr/produits/vin"
