@@ -7,14 +7,19 @@ import ssl
 from datetime import datetime
 import sqlite3
 import math
+import certifi
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
 ### Constants
 DATABASE = 'SAQ.db'
 URL_WINES = "wine_url_list.txt"
+URI_ATLAS_MONGODB = "mongodb+srv://daprogco:h24HszlhzKqzI6PM@saq.xrq1hyr.mongodb.net/?retryWrites=true&w=majority&appName=SAQ"
 TABLE_LISTING = 'list_SAQ'
 TABLE_WINES = 'wine_SAQ'
 URL_LISTING = "https://www.saq.com/fr/produits/vin"
 ITEMS_PER_PAGE = 24
+
 
 ### Catch errors wrapper function
 def catch_errors(func: callable):
@@ -59,11 +64,6 @@ def count_table_rows(table):
     count = cur.fetchone()[0]
     conn.close()
     return count
-
-# TODO: Add mongodb functions
-# Helpers mongodb functions
-def copy_to_mongodb(*kwargs):
-    pass
 
 # Helpers Listing functions
 def save_to_file(filename, data):
@@ -162,6 +162,17 @@ def webcrawler_wines(start=0, end=len(all_wines_urls())):
         print(50 * "=")
         time.sleep(randint(1, 3))
 
+# MongoDB functions
+def copy_to_mongodb(wine):
+    client = MongoClient(URI_ATLAS_MONGODB, tlsCAFile=certifi.where())
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+    db = client['SAQ']
+    collection = db['wines']
+    collection.insert_one(wine._asdict())
+    client.close()
+
+
 # Main function to perform all the tasks
 def main():
     try: 
@@ -174,5 +185,4 @@ def main():
     list_all_wines()
 
 if __name__ == "__main__":
-    ## main()
-    list_all_wines(-4,10)
+    main()
